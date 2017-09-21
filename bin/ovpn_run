@@ -65,6 +65,15 @@ if [ "$OVPN_DEFROUTE" != "0" ] || [ "$OVPN_NAT" == "1" ] ; then
     done
 fi
 
+$IPTABLES -C FORWARD -i "tun0" -o $OVPN_NATDEVICE -j ACCEPT {
+    $IPTABLES -A FORWARD -i "tun0" -o $OVPN_NATDEVICE -j ACCEPT
+}
+
+$IPTABLES -C FORWARD -o "tun0" -i $OVPN_NATDEVICE -j ACCEPT {
+    $IPTABLES -A FORWARD -o "tun0" -i $OVPN_NATDEVICE -j ACCEPT
+}
+
+
 # Use a hacky hardlink as the CRL Needs to be readable by the user/group
 # OpenVPN is running as.  Only pass arguments to OpenVPN if it's found.
 if [ -r "$EASYRSA_PKI/crl.pem" ]; then
