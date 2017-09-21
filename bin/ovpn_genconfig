@@ -55,6 +55,7 @@ usage() {
     echo " -2    Enable two factor authentication using Google Authenticator."
     echo " -f    Set the fragment directive."
     echo " -e    Add extra server config"
+    echo " -o    Network interface connected to the internet. Default is eth0."
 }
 
 if [ "$DEBUG" == "1" ]; then
@@ -85,7 +86,7 @@ OVPN_EXTRA_CONFIG=''
 [ -r "$OVPN_ENV" ] && source "$OVPN_ENV"
 
 # Parse arguments
-while getopts ":a:e:C:T:r:s:du:cp:n:DNmf:tz2" opt; do
+while getopts ":a:e:C:T:r:s:du:co:p:n:DNmf:tz2" opt; do
     case $opt in
         a)
             OVPN_AUTH="$OPTARG"
@@ -141,6 +142,9 @@ while getopts ":a:e:C:T:r:s:du:cp:n:DNmf:tz2" opt; do
         f)
             OVPN_FRAGMENT=$OPTARG
             ;;
+        o)
+            OVPN_NATDEVICE=$OPTARG
+            ;;
         \?)
             set +x
             echo "Invalid option: -$OPTARG" >&2
@@ -192,6 +196,7 @@ export OVPN_TLS_CIPHER OVPN_CIPHER OVPN_AUTH
 export OVPN_COMP_LZO
 export OVPN_OTP_AUTH
 export OVPN_FRAGMENT
+export OVPN_NATDEVICE
 
 # Preserve config
 if [ -f "$OVPN_ENV" ]; then
